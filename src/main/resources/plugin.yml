@@ -1,0 +1,5 @@
+name: DistanceScore
+version: ${project.version}
+main: net.kunmc.lab.distancescore.DistanceScore
+api-version: 1.15
+authors: [Kamesuta]
