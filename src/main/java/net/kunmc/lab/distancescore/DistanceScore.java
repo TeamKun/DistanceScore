@@ -1,6 +1,8 @@
 package net.kunmc.lab.distancescore;
 
+import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
@@ -8,6 +10,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Scoreboard;
+
+import java.util.Optional;
 
 public final class DistanceScore extends JavaPlugin implements Listener {
 
@@ -27,12 +31,14 @@ public final class DistanceScore extends JavaPlugin implements Listener {
 
     @EventHandler
     public void onPlayerMoved(PlayerMoveEvent event) {
-        Location spawnLocation = event.getPlayer().getWorld().getSpawnLocation();
+        Player player = event.getPlayer();
+        Location spawnLocation = Optional.ofNullable(player.getBedSpawnLocation()).orElse(player.getWorld().getSpawnLocation());
         int distance = (int) Math.floor(event.getTo().distance(spawnLocation));
 
-        Score score = objective.getScore(event.getPlayer().getName());
+        Score score = objective.getScore(player.getName());
         int maxDistance = score.isScoreSet() ? score.getScore() : 0;
-        if (maxDistance < distance)
+        GameMode gameMode = player.getGameMode();
+        if (maxDistance < distance && (gameMode == GameMode.SURVIVAL || gameMode == GameMode.ADVENTURE))
             score.setScore(distance);
     }
 
